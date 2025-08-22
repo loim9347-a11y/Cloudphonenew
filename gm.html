@@ -6,6 +6,194 @@
     <meta name="theme-color" content="#ffffff">
     <title>Cloud Phone UI</title>
         <style>
+/* CSS cho lớp phủ toàn màn hình */
+        #hologram-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(10px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        #hologram-overlay.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* Hiệu ứng ma trận kỹ thuật số */
+        .digital-matrix {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: repeating-linear-gradient(
+                45deg,
+                rgba(0, 255, 255, 0.05),
+                rgba(0, 255, 255, 0.05) 1px,
+                transparent 1px,
+                transparent 10px
+            ), repeating-linear-gradient(
+                -45deg,
+                rgba(0, 255, 255, 0.05),
+                rgba(0, 255, 255, 0.05) 1px,
+                transparent 1px,
+                transparent 10px
+            );
+            animation: matrix-scan 20s linear infinite;
+        }
+
+        @keyframes matrix-scan {
+            0% { background-position: 0 0; }
+            100% { background-position: 1000px 1000px; }
+        }
+
+        /* Bảng thông báo chính */
+        .hologram-board {
+            position: relative;
+            width: 90%;
+            max-width: 600px;
+            padding: 40px;
+            background: rgba(10, 0, 20, 0.9);
+            border: 2px solid #00ffff;
+            border-image: linear-gradient(45deg, #ff00ff, #00ffff) 1;
+            box-shadow: 0 0 40px rgba(0, 255, 255, 0.7);
+            border-radius: 15px;
+            text-align: center;
+            color: #fff;
+            transform: scale(0.8) translateY(-50px);
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+        }
+
+        #hologram-overlay.visible .hologram-board {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+
+        /* Hiệu ứng quét hologram */
+        .hologram-board::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, transparent, #00ffff, transparent);
+            animation: scan-line 3s linear infinite;
+        }
+
+        @keyframes scan-line {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Tiêu đề */
+        .hologram-board h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2.5em;
+            color: #00ffff;
+            text-shadow: 0 0 10px #00ffff, 0 0 20px #ff00ff;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Nội dung */
+        .hologram-board p {
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.2em;
+            color: #d0d0d0;
+            margin-bottom: 30px;
+        }
+
+        /* Nhóm nút chính */
+        .button-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* Container cho 2 nút nhỏ */
+        .top-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            width: 100%;
+        }
+
+        /* Thiết kế nút bấm */
+        .action-button {
+            padding: 12px 25px;
+            border: 2px solid;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            text-transform: uppercase;
+            text-decoration: none;
+            color: #fff;
+            position: relative;
+            background: none;
+            transition: all 0.3s ease;
+        }
+
+        /* Kích thước riêng cho từng nút */
+        .small-button {
+            flex: 1; /* Chia đều không gian */
+            max-width: 200px; /* Giới hạn kích thước */
+        }
+
+        .large-button {
+            width: calc(100% - 30px); /* Bằng tổng 2 nút nhỏ + khoảng cách */
+            max-width: 415px;
+            padding: 15px 30px; /* To hơn một chút */
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.2);
+            box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+        }
+
+        /* Màu sắc cho từng nút */
+        .btn-know {
+            border-color: #00ff00;
+            color: #00ff00;
+        }
+        .btn-know:hover {
+            background-color: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 20px #00ff00;
+        }
+
+        .btn-guide {
+            border-color: #ffc107;
+            color: #ffc107;
+        }
+        .btn-guide:hover {
+            background-color: rgba(255, 193, 7, 0.1);
+            box-shadow: 0 0 20px #ffc107;
+        }
+
+        .btn-join {
+            border-color: #007bff;
+            color: #007bff;
+        }
+        .btn-join:hover {
+            background-color: rgba(0, 123, 255, 0.1);
+            box-shadow: 0 0 20px #007bff;
+        }
+
          /* Hình Hello Kitty */
         .hello-kitty {
             position: absolute;
@@ -270,6 +458,26 @@
     </style>
 </head>
 <body>
+<div id="hologram-overlay">
+        <div class="digital-matrix"></div>
+        <div class="hologram-board">
+            <h1>Hệ Thống Thông Báo</h1>
+            <p>Bạn Đã Biết Cách Xài Chưa?</p>
+            <div class="button-group">
+                <div class="top-buttons">
+                   <button class="action-button btn-know small-button" onclick="hideNotification()">
+                        Đã Biết
+                    </button>
+                    <a href="https://www.youtube.com/@torocloudphone2307" target="_blank" class="action-button btn-guide small-button">
+                        Hướng Dẫn
+                    </a>
+                </div>
+                <a href="https://zalo.me/g/cdxasc933" target="_blank" class="action-button btn-join large-button">
+                    Tham Gia Nhóm
+                </a>
+            </div>
+        </div>
+    </div>
 <div class="action-buttons">
   <div>
     <img src="https://i.imgur.com/j1NXC8M.png" style="object-position: left; cursor: pointer;" onclick="location.reload();">
@@ -1103,6 +1311,28 @@
 
   window.addEventListener('load', highlightCenterScreen);
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+        document.getElementById('hologram-overlay').classList.add('visible');
+    });
+</script>
+<script>
+    // Lấy phần tử overlay và nút "Đã biết"
+    const overlay = document.getElementById('hologram-overlay');
+    const closeButton = document.getElementById('closeButton');
+
+    // Thêm sự kiện click cho nút
+    closeButton.addEventListener('click', () => {
+        // Ẩn overlay bằng cách xóa class 'visible'
+        overlay.classList.remove('visible');
+    });
+</script>
+<script>
+    function hideNotification() {
+        const overlay = document.getElementById('hologram-overlay');
+        overlay.classList.remove('visible');
+    }
+</script>
 </body>
 </html>
 </body>
@@ -1115,4 +1345,8 @@
 </html>
 </html>
 </html>
-</html>ml>>>
+</html>
+</html>
+</html>
+</html>
+</html></html>ml>>>>ml>>>
